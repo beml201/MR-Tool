@@ -5,7 +5,8 @@ An MR tool that will plot the regressions with a first plot and numerical output
 
 #### strand.update
 Arguments: merged_df, expo_A1_col, expo_A2_col, expo_effect_col, out_A1_col, out_A2_col, out_effect_col
------------------------
+|||
+|---|---|
 | merged_df | a mergeddadggiygi|
 | expo_A1_col | a mergeddadggiygi|
 | expo_A2_col | a mergeddadggiygi|
