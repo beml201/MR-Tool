@@ -135,6 +135,10 @@ make.plot <- function(x, y, x_se, y_se, regression_summary, title='Mendelian Ran
                                legendgroup=toString(i),
                                color=my.colors[i])
   }
+  fig1 <- fig1 %>% layout(
+    xaxis= list(range= c(min(x-x_se,0),max(x+x_se))),
+    yaxis= list(range= c(min(y-y_se),max(y+y_se)))
+  )
   
   fig2 <- plot_ly() %>% add_trace()
   for(i in 1:nrow(regression_summary)){
