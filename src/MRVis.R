@@ -114,8 +114,9 @@ all.regressions <- function(x, y, x_se, y_se){
 
 make.plot <- function(x, y, x_se, y_se, regression_summary, title='Mendelian Randomisation Plot'){
   my.axes <- data.frame(x=c(min(x-x_se,0),max(x+x_se),rep(NA,length(x)-2)))
-  my.colors <- c('red','blue','green','grey','purple')
+  my.colors <- c('red','blue','green','grey','purple','lightblue','orange')
   
+  regression_summary$type <- gsub('_','\n',regression_summary$type)
   regression.names <- regression_summary$type
   regression.beta <- regression_summary$beta
   regression.intercept <- regression_summary$intercept
@@ -136,8 +137,8 @@ make.plot <- function(x, y, x_se, y_se, regression_summary, title='Mendelian Ran
                                color=my.colors[i])
   }
   fig1 <- fig1 %>% layout(
-    xaxis= list(range= c(min(x-x_se,0),max(x+x_se))),
-    yaxis= list(range= c(min(y-y_se),max(y+y_se)))
+    xaxis= list(range= c(min(x-1.96*x_se,0),max(x+1.96*x_se))),
+    yaxis= list(range= c(min(y-1.96*y_se),max(y+1.96*y_se)))
   )
   
   fig2 <- plot_ly() %>% add_trace()
@@ -154,17 +155,23 @@ make.plot <- function(x, y, x_se, y_se, regression_summary, title='Mendelian Ran
   }
   
   my.reg.round <- regression_summary
+  my.reg.round$type <- gsub('\n',' ', my.reg.round$type)
   my.reg.round[,2:6] <- round(my.reg.round[,2:6],5)
-  fig3 <- plot_ly(type="table",
+  fig3 <- plot_ly(type='table',
                   header=list(values=names(my.reg.round),
                               fill = list(color = 'lightgrey')), 
                   cells=list(values=unname(my.reg.round)),
                   domain = list(x=c(0,1), y=c(0,0.4)))
   
-  s1 <- subplot(fig1,fig2)
-  fig <- subplot(s1,fig3,nrows=2) %>%
-    layout(yaxis = list(domain=c(0.5,0.9)),
-           yaxis3 = list(domain=c(0,0.5)))
-  fig <- fig %>% layout(title = list(text=title,y=0.97))
-  
+  # s1 <- subplot(fig1,fig2)
+  # fig <- subplot(s1,fig3,nrows=2) %>%
+  #   layout(yaxis = list(domain=c(0.5,0.9)),
+  #          yaxis3 = list(domain=c(0,0.5)))
+  fig <- subplot(fig1, fig2, fig3, nrows = 2)
+  fig <- fig %>% layout(title = list(text=title,y=0.97),
+                        yaxis=list(domain=c(0.5,0.9)),
+                        yaxis2=list(domain=c(0.5,0.9)),
+                        xaxis=list(domain=c(0,0.5)),
+                        xaxis2=list(domain=c(0.7,1)))
+ 
 }
