@@ -61,47 +61,134 @@ If a static image is required, this can be done by clicking the camera icon <ima
 - [boot.strap(x, y, x_se, y_se, weighting, n)](#bootstrap)
 
 #### strand.update
-Arguments: merged_df, expo_A1_col, expo_A2_col, expo_effect_col, out_A1_col, out_A2_col, out_effect_col
-|||
+|Arguments||
 |---|---|
 |merged_df |dataframe: including the known alleles, effect sizes and standard errors|
 |expo_A1_col |string: name of the exposure allele column|
 |expo_A2_col |string: name of the exposure non-effect allele column|
-|expo_effect_col |string: name of the effect (beta) column|
+|expo_effect_col |string: name of the exposure effect (beta) column|
 |out_A1_col |string: name of the outcome allele column|
 |out_A2_col |string: name of the outcome allele column|
 |out_effect_col |string: name of the outcome effect (beta) column|
 
+This function will return a modified version fo the merged dataframe that is input with an updated SNP list to make sure that all the exposure alleles have positive effect sizes and the outcome alleles are correctly aligned to the exposures.
+This may also be considered "harmonization".
+
 #### all.regressions
-Arguments: x, y, x_se, y_se
+|Arguments||
+|---|---|
+|x|vector: exposure effect size (ensure same length as y)|
+|y|vector: outcome effect size (ensure same length as x)|
+|x_se|vector: exposure standard error for each SNP|
+|y_se|vector: outcome standard error for each SNP|
+
+This runs all the different regressions at once: IVW, MR-Egger, simple median, weighted median and penalised weighted median.
+Returns a dataframe of all the regressions.
 
 #### make.plot
-Arguments: x, y, x_se, y_se, regression_summary, title
+|Arguments||
+|---|---|
+|x|vector: exposure effect size (ensure same length as y)|
+|y|vector: outcome effect size (ensure same length as x)|
+|x_se|vector: exposure standard error for each SNP|
+|y_se|vector: outcome standard error for each SNP|
+|regression_summary| dataframe: a dataframe of regressions|
+|title| string: The title of the final interactive, <i>default</i>: "Mendelian Randomisation Plot"|
+
+regression_summary has columns: type, beta, se, tval, p and intercept
+<i>all.regressions</i> will output the appropriate dataframe format to be used with make.plot
+If desired, the dataframe can be modified (or created) to plot different regression lines in the interactive output (type, beta, se and intercept required).
+Returns a plotly interactive figure.
 
 #### IVW
-Arguments: x, y, x_se, y_se, weighting
+|Arguments||
+|---|---|
+|x|vector: exposure effect size (ensure same length as y)|
+|y|vector: outcome effect size (ensure same length as x)|
+|x_se|vector: exposure standard error for each SNP|
+|y_se|vector: outcome standard error for each SNP|
+|weighting| function(xw,yw): weighting formula for regression, <i>default</i>: yw<sup>-2</sup>|
+
+Produces a linear regression model (can be viewed using <i>summary()</i>) in line with the IVW method
+<i>weighting</i> can be altered if desired (would no longer be inverse-variance weighted)
 
 #### Egger
-Arguments: x, y, x_se, y_se, weighting
+|Arguments||
+|---|---|
+|x|vector: exposure effect size (ensure same length as y)|
+|y|vector: outcome effect size (ensure same length as x)|
+|x_se|vector: exposure standard error for each SNP|
+|y_se|vector: outcome standard error for each SNP|
+|weighting|function(xw,yw): weighting formula for regression, <i>default</i>: yw<sup>-2</sup>|
+
+Produces a linear regression model in line with MR-Egger method
+<i>weighting</i> can be altered if desired (would no longer be inverse-variance weighted)
 
 #### median.regression
 Arguments: x, y, x_se, y_se, weighting
+|Arguments||
+|---|---|
+|x|vector: exposure effect size (ensure same length as y)|
+|y|vector: outcome effect size (ensure same length as x)|
+|x_se|vector: exposure standard error for each SNP|
+|y_se|vector: outcome standard error for each SNP|
+|weighting|function(xw,yw): weighting formula for regression, <i>default</i>: yw<sup>-2</sup>|
+
+Produces a median regression model based on <i>weighted.median</i>
+<i>weighting</i> can be altered (which it is within <i>all.regresions</i>)
+Uses <i>boot.strap</i> to calculate the standard error of the betas and <i>t.val</i> and <i>p.val</i> to calculate further statistics based on the bootstrapped errors.
+Returns a list of beta, se, tval and p.
 
 #### weighted.median
 Arguments: x, weights
+|Arguments||
+|---|---|
+|x|vector: exposure effect size (ensure same length as y)|
+|weights|vector: weights for median (ensure same length as x)|
+
+Returns a weighted median
 
 #### weights.penalised
 Arguments: x, y, x_se, y_se, betaIVW
+|Arguments||
+|---|---|
+|x|vector: exposure effect size (ensure same length as y)|
+|y|vector: outcome effect size (ensure same length as x)|
+|x_se|vector: exposure standard error for each SNP|
+|y_se|vector: outcome standard error for each SNP|
+|betaIVW|float: IVW coefficient|
+
+Returns a vector of penalised weights
 
 #### t.val
 Arguments: beta, se
+|Arguments||
+|---|---|
+|beta|float: coefficient of regression|
+|se|float: standard error of regression|
+
 Applies beta/se to calculate a t-value (used for bootstrapped functions, ie median regressions)
 
 #### p.val
 Arguments: t, df, dist
+|Arguments||
+|---|---|
+|t|float: t-value of rgeression|
+|df|float: degrees of freedom for the chi-squared distribution|
+|dist|string: distribution to use, <i>default</i>; "t"|
+
 Calculates the p-value of a given distribution given a certain t-value
-set 'dist' to 't' for the t-distribution and 'norm' to the normal distribution (N(0,1))
+set <i>dist</i> to "t" for the t-distribution and "norm" to the normal distribution (N(0,1))
 
 #### boot.strap
 Arguments: x, y, x_se, y_se, weighting, n
+|Arguments||
+|---|---|
+|x|vector: exposure effect size (ensure same length as y)|
+|y|vector: outcome effect size (ensure same length as x)|
+|x_se|vector: exposure standard error for each SNP|
+|y_se|vector: outcome standard error for each SNP|
+|weighting|vector: weights for the <i>weighted.median</i> calculation when bootstrapping|
+|n|integer: number of times to repeat for bootstrapping standard errors|
 
+Estimates the standard error of the given weightings for the <i>median.regression</i> function.
