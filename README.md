@@ -41,7 +41,7 @@ Or you can save it as an html file (this can be opened in a browser and interact
 htmlwidgets::saveWidget(as_widget(my.fig), 'MR-Tool_Interactive_Plot.html')
 ```
 (the htmlwidgets package should have been installed with your plotly install)
-If a static image is required, this can be done by clicking the camera icon <image src="https://cdn1.iconfinder.com/data/icons/ios-11-glyphs/30/camera-512.png" style="width:1em;height:1em"> within the interactive
+If a static image is required, this can be done by clicking the camera icon <image src="https://cdn1.iconfinder.com/data/icons/ios-11-glyphs/30/camera-512.png" width="14" height="14"> within the interactive
 
 ---
 
