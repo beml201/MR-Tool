@@ -12,6 +12,10 @@ Ensure you have plotly installed:
 ```R
 install.packages("plotly")
 ```
+Source the MRVis file to load all the functions
+```R
+source("MR-Tool/src/MRVis.R")
+```
 Make a dataframe of your exposure and outcome SNPs and read it into R
 ```R
 df <- read.table("Your_File_location.tsv",header=T)
